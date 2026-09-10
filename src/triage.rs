@@ -616,7 +616,17 @@ pub fn html(e: &Experiment) -> String {
                     .iter()
                     .find(|r| r["url"] == m.request_url)
                     .unwrap();
-                out.push_str(&format!("<aside><a href=\"{}\">{}</a> · {} positive votes<p>{}: {}</p><small>{}</small></aside>",h(&m.request_url),h(r["title"].as_str().unwrap_or("")),r["positive_votes"].as_u64().map(|n|n.to_string()).unwrap_or("unknown".into()),h(&m.relation),h(&m.rationale),h(&m.evidence.join(" · "))));
+                out.push_str(&format!(
+                    "<aside>{} · {} positive votes<p>{}: {}</p><small>{}</small></aside>",
+                    render::github_link(&m.request_url, r["title"].as_str().unwrap_or("")),
+                    r["positive_votes"]
+                        .as_u64()
+                        .map(|n| n.to_string())
+                        .unwrap_or("unknown".into()),
+                    h(&m.relation),
+                    h(&m.rationale),
+                    h(&m.evidence.join(" · "))
+                ));
             }
             if a.matches.is_empty() {
                 out.push_str(

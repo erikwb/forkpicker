@@ -932,9 +932,8 @@ pub fn html(s: &Shortlist) -> String {
             if let Some(r) = s.requests.iter().find(|r| &r.url == url) {
                 let _ = write!(
                     out,
-                    "<p><a href=\"{}\">{}</a> · {} positive votes</p>",
-                    h(url),
-                    h(&r.title),
+                    "<p>{} · {} positive votes</p>",
+                    render::github_link(url, &r.title),
                     r.positive_votes
                         .map(|n| n.to_string())
                         .unwrap_or("unknown".into())
@@ -948,7 +947,7 @@ pub fn html(s: &Shortlist) -> String {
     }
     out.push_str("<h2>Open project threads</h2><p>Classified requests appear first, ordered by priority labels and positive votes. Other threads follow with their classification shown.</p><input id=\"search\" aria-label=\"Search requests\" placeholder=\"Search project requests…\">");
     for r in &s.requests {
-        let _ = write!(out,"<article><h3><a href=\"{}\">{}</a></h3><p>{} positive votes · priority labels: {}</p><p>Thread classification: {} · project category: {}</p><p>{} explicitly linked candidates · {} possible topic matches · {} candidates outside an identified open PR queue</p>",h(&r.url),h(&r.title),r.positive_votes.map(|v| v.to_string()).unwrap_or("unknown".into()),h(&r.priority_labels.join(", ")),h(&r.demand_class),h(r.discussion_category.as_deref().unwrap_or("not supplied")),r.linked_candidates.len(),r.possible_candidates.len(),r.discovery_candidates.len());
+        let _ = write!(out,"<article><h3>{}</h3><p>{} positive votes · priority labels: {}</p><p>Thread classification: {} · project category: {}</p><p>{} explicitly linked candidates · {} possible topic matches · {} candidates outside an identified open PR queue</p>",render::github_link(&r.url, &r.title),r.positive_votes.map(|v| v.to_string()).unwrap_or("unknown".into()),h(&r.priority_labels.join(", ")),h(&r.demand_class),h(r.discussion_category.as_deref().unwrap_or("not supplied")),r.linked_candidates.len(),r.possible_candidates.len(),r.discovery_candidates.len());
         for id in &r.linked_candidates {
             let c = s.candidates.iter().find(|c| &c.id == id).unwrap();
             let _ = write!(out,"<details><summary>{} {}</summary><p><code>{}</code> · {} patches · {} files · {} changed test files (not executed)</p><p>{}</p>",if s.selected_feature_ids.contains(id){"Selected ·"}else{""},h(&c.title),h(id),c.patches,c.files,c.changed_test_files,h(&c.delta));
@@ -970,9 +969,8 @@ pub fn html(s: &Shortlist) -> String {
         for url in c.matched_requests.iter().chain(&c.other_thread_links) {
             let _ = write!(
                 out,
-                "<p>Linked thread: <a href=\"{}\">{}</a></p>",
-                h(url),
-                h(url)
+                "<p>Linked thread: {}</p>",
+                render::github_link(url, url)
             );
         }
         for reason in &c.reasons {

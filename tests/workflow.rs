@@ -563,6 +563,62 @@ fn html_and_terminal_neutralize_untrusted_text() {
     assert!(!html.contains("<script>alert(1)</script>"));
     assert!(html.contains("&lt;script&gt;"));
     assert!(!render::terminal(&report, None, true).contains('\u{1b}'));
+    report.features[0].issue_links =
+        vec!["https://github.com/upstream/example/issues/42)<script>alert(1)</script>".into()];
+    let markdown = render::markdown(&report, None, true);
+    assert!(!markdown.contains("<script>"));
+    assert!(markdown.contains("[Issue/PR context](<https://github.com/"));
+    assert!(markdown.contains("%3Cscript%3E"));
+}
+
+#[test]
+fn demand_pages_reject_executable_and_foreign_urls_in_saved_inputs() {
+    use forkpicker::{shortlist, triage};
+    use serde_json::json;
+    let fixture = Fixture::new();
+    fixture.hdr();
+    let mut report = fixture.scan(&["hdr"], &["main"]);
+    report.repository = "upstream/example".into();
+    let sha = report.features[0].commits[0].clone();
+    report.commits.get_mut(&sha).unwrap().message = "Implement #42".into();
+    report.demand = Some(demand_snapshot(vec![demand_thread(
+        "Issue <title>",
+        "open",
+        5,
+    )]));
+    let mut shortlist = shortlist::build(&report, None, None, false, 10).unwrap();
+    assert_eq!(shortlist.selected_feature_ids.len(), 1);
+    for url in [
+        "javascript:alert(document.domain)",
+        "java\nscript:alert(1)",
+        "data:text/html,<script>alert(1)</script>",
+        "https://github.com.attacker.invalid/",
+        "https://github.com@attacker.invalid/",
+        "https://github.com/upstream/example/issues/42",
+    ] {
+        // Imported snapshots must be safe to render even if their URLs are forged.
+        shortlist.requests[0].url = url.into();
+        shortlist.candidates[0].matched_requests = vec![url.into()];
+        let experiment: triage::Experiment = serde_json::from_value(json!({
+            "schema_version":1, "repository":report.repository, "base_sha":report.base_sha,
+            "source_fingerprint":"fixture", "generated_at":"now", "agent":"fixture",
+            "requested_model":null, "policy":"fixture", "planned_batches":1,
+            "attempted_calls":1, "reused_batches":0, "errors":[], "suggested_review_ids":[],
+            "cards":[{"feature_id":"candidate", "title":"Candidate", "sampling":"fixture",
+                "patches":[], "commits":[], "requests":[{"url":url, "title":"Issue <title>"}],
+                "limitations":[]}],
+            "batches":[{"key":"fixture", "feature_ids":["candidate"], "input_bytes":0,
+                "duration_ms":0, "provider_usage":null, "response":{"assessments":[{
+                    "feature_id":"candidate", "summary":{"text":"Summary", "evidence":[]},
+                    "matches":[{"request_url":url, "relation":"related", "rationale":"Reason", "evidence":[]}],
+                    "limitations":[]}]}}]
+        })).unwrap();
+        for html in [shortlist::html(&shortlist), triage::html(&experiment)] {
+            assert!(html.contains("Issue &lt;title&gt;"));
+            let href = format!("href=\"{}\"", render::html_escape(url));
+            assert_eq!(html.contains(&href), url.ends_with("/issues/42"), "{url}");
+        }
+    }
 }
 
 #[test]

@@ -263,9 +263,11 @@ fn feature_markdown_with_facts(report: &Report, f: &Feature, fact: &metrics::Fac
     }
     for link in &f.issue_links {
         if safe_url(link) {
+            // Serialize before embedding: imported URLs can contain Markdown delimiters.
+            let link = reqwest::Url::parse(link).expect("validated URL");
             let _ = writeln!(
                 out,
-                "- [Issue/PR context]({link}) — relevance and resolution require review"
+                "- [Issue/PR context](<{link}>) — relevance and resolution require review"
             );
         }
     }
@@ -340,6 +342,18 @@ fn enum_name(value: &impl serde::Serialize) -> String {
 fn safe_url(url: &str) -> bool {
     reqwest::Url::parse(url)
         .is_ok_and(|u| u.scheme() == "https" && u.host_str() == Some("github.com"))
+}
+
+pub fn github_link(url: &str, label: &str) -> String {
+    let label = html_escape(label);
+    if safe_url(url) {
+        format!(
+            "<a href=\"{}\" rel=\"noreferrer\">{label}</a>",
+            html_escape(url)
+        )
+    } else {
+        label
+    }
 }
 
 pub fn html(report: &Report, query: Option<&str>, all: bool) -> String {
