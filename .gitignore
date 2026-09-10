@@ -1,0 +1,6 @@
+/target/
+/.forkpicker/
+/.makepkg/
+/reports/
+/dist/
+*.tmp

@@ -1,0 +1,280 @@
+:root {
+  color-scheme: light dark;
+  font:
+    16px/1.55 system-ui,
+    sans-serif;
+  --bg: #f6f7f9;
+  --panel: #fff;
+  --ink: #192330;
+  --muted: #5c6977;
+  --line: #dce1e8;
+  --link: #245ba7;
+  --chip: #e9eff7;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 16px max(20px, calc((100vw - 1080px) / 2));
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+nav {
+  display: flex;
+  gap: 20px;
+}
+.brand {
+  font-weight: 750;
+  color: var(--ink);
+}
+main {
+  max-width: 1080px;
+  margin: auto;
+  padding: 28px 20px 60px;
+}
+h1 {
+  font-size: 1.8rem;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+h2 {
+  font-size: 1.1rem;
+  line-height: 1.35;
+  margin: 0 0 8px;
+}
+h3 {
+  font-size: 1rem;
+}
+p {
+  margin: 10px 0;
+}
+.muted,
+small {
+  color: var(--muted);
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 22px 0;
+}
+input[type="search"] {
+  flex: 1;
+  min-width: 140px;
+}
+input,
+select,
+button {
+  font: inherit;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 9px 12px;
+}
+button {
+  cursor: pointer;
+}
+.cards {
+  display: grid;
+  gap: 14px;
+}
+.card,
+.panel {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.card p {
+  max-width: 85ch;
+}
+.meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 9px 0;
+}
+.tag {
+  background: var(--chip);
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.repo {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.delta {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.plus {
+  color: #217849;
+}
+.minus {
+  color: #b84444;
+}
+.back {
+  display: inline-block;
+  margin-bottom: 15px;
+}
+.section {
+  margin-top: 24px;
+}
+.row {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.row:first-child {
+  border-top: 0;
+}
+.commit {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+.pagination {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin: 20px 0;
+}
+.evidence {
+  font-size: 0.88rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.83rem;
+  background: var(--panel);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.notice {
+  padding: 12px 16px;
+  background: var(--chip);
+  border-radius: 7px;
+}
+.active {
+  font-weight: 700;
+  text-decoration: underline;
+}
+code {
+  overflow-wrap: anywhere;
+}
+.fork-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111820;
+    --panel: #19222d;
+    --ink: #e3eaf2;
+    --muted: #a3b0bf;
+    --line: #303e4f;
+    --link: #8ebfff;
+    --chip: #243449;
+  }
+  .plus {
+    color: #83d9a7;
+  }
+  .minus {
+    color: #ed9898;
+  }
+}
+@media (max-width: 520px) {
+  header {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+  nav {
+    gap: 12px;
+    font-size: 0.9rem;
+  }
+  main {
+    padding: 20px 14px;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  .card,
+  .panel {
+    padding: 15px;
+  }
+  .commit {
+    display: block;
+  }
+  .toolbar > * {
+    max-width: 100%;
+  }
+}
+
+.card-sources {
+  margin: 0 0 12px;
+}
+.feature-date {
+  white-space: nowrap;
+}
+
+.issue-links {
+  border-top: 1px solid var(--line);
+  margin-top: 14px;
+  padding-top: 6px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.source-fork-row {
+  display: flex;
+  align-items: center;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+}
+.source-fork-row .repo {
+  min-width: 0;
+}
+.source-fork-row .avatar {
+  flex-shrink: 0;
+}
