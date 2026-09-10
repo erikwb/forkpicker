@@ -125,8 +125,13 @@ mod tests {
             resolve_classification(&config, "codex", Some("command-model"), Some("high")).unwrap();
         assert_eq!(p.model.as_deref(), Some("command-model"));
         assert_eq!(p.effort.as_deref(), Some("high"));
-        let inherited =
+        let mut inherited =
             resolve_classification(&config, "codex", Some("inherit"), Some("inherit")).unwrap();
+        // Argument construction needs an executable, but must not require an installed agent.
+        inherited.command[0] = std::env::current_exe()
+            .unwrap()
+            .to_string_lossy()
+            .into_owned();
         let argv = crate::review::invocation(
             &inherited,
             std::path::Path::new("input"),
